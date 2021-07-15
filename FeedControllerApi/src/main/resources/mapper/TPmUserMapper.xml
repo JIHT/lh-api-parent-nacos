@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lihua.feedcontrollerapi.dao.TPmUserDao">
+    <!-- TPmUser的resultMap,column是给数据库列起的别名,它对应property类的属性 -->
+    <select id="getPmUserIdBySysUserId" resultType="string">
+		select u.FID from T_PM_USER u
+			left join oadb.SYSTEM_USERS s on u.fpersonid = s.easuser_id
+			where  u.FForbidden = 0 and u.FIsDelete = 0 and s.ID = #{userid} order by u.FCREATETIME desc
+	</select>
+
+    <select id="getPersonIdBySysUserId" resultType="string">
+		select u.FPersonId from T_PM_USER u
+							  left join oadb.SYSTEM_USERS s on u.fpersonid = s.easuser_id
+		where s.ID = #{userid} and u.FForbidden = 0 and u.FIsDelete = 0
+	</select>
+    <select id="getPmUserIdByFlockId" resultType="java.lang.String">
+		select
+			   d.FID "rearerid"
+		from T_KD_RecBrlrFlk a
+				 left join T_KD_RecRearer b on a.FREARERID = b.FID
+				 left join T_KD_Area c on b.FAREAID = c.FID
+				 left join t_pm_user d on d.FPERSONID = c.FTechnicianID
+		where a.FID =#{flockId}
+	</select>
+    <select id="getOaIdByPmUserId" resultType="java.lang.String">
+		select
+			   s.ID
+		from T_PM_USER u
+				 left join oadb.SYSTEM_USERS s on u.fpersonid = s.easuser_id
+		where u.FID =#{userPmId}
+	</select>
+
+    <select id="getMsgUser" parameterType="String"
+            resultType="com.lihua.feedcontrollerapi.entity.TPmUser">
+        select c.fid fid
+        from T_MOB_MsgAcceptPerson a
+        left join t_Mob_Msgacceptpersonentrys b on a.fid=b.fparentid
+        left join t_pm_user c on b.fpersonid=c.fpersonid
+        where a.fnumber=#{billNum}
+        and c.fislocked=0
+        and c.fisdelete=0
+        and c.fforbidden=0
+        <if test='orgid !=null '>
+            and (b.forgid=#{orgid} or b.forgid='00000000-0000-0000-0000-000000000000CCE7AED4')
+        </if>
+    </select>
+    <select id="getOrgs" resultType="java.util.Map">
+        select distinct c.fid "orgId",
+        c.FNAME_L2 "orgName",
+        case
+        when d.FDEFORGUNITID = c.FID then '1'
+        else '0' end "isDef"
+        from T_PM_OrgRange a
+        left join T_ORG_STORAGE c on a.FORGID = c.FID
+        left join T_PM_USER d on a.FUSERID = d.FID
+        left join T_ORG_STORAGE e on d.FDEFORGUNITID = e.FID
+        where c.FTYPE in ('1103','1203','1303')
+        and a.FUSERID = #{userPmId}
+        <choose>
+            <when test="name  != null  and name.trim() != ''">
+                and c.FNAME_L2 like '%${name}%'
+            </when>
+        </choose>
+        order by "isDef" desc,c.FNAME_L2
+    </select>
+
+</mapper>

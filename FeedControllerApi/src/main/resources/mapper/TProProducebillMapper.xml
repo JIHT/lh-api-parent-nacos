@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lihua.feedcontrollerapi.dao.TProProducebillDao">
+    <!-- TProProducebill的resultMap,column是给数据库列起的别名,它对应property类的属性 -->
+
+    <select id="listBillsByDate" resultType="java.util.Map">
+        select a.fid                                           "billId",
+               a.FNUMBER                                       "billNumber",
+               to_char(a.FCREATETIME, 'yyyy-MM-dd hh24:mi:ss') "createTime",
+               c.FNAME_L2                                      "creater",
+               d.FNUMBER                                       "feedNumber",
+               d.FNAME_L2                                      "feedName",
+               e.FVERSION                                      "formulaNumber",
+               a.FSCHQTY										"planQty"
+        from CT_INV_DesignFeedBill a
+                 left join T_ORG_STORAGE b on a.FORGUNITWENSID = b.FID
+                 left join T_PM_USER c on a.FCREATORID = c.FID
+                 left join T_BD_MATERIAL d on a.FFeedNumberID = d.FID
+                 left join T_PRO_FeedBOM e on a.FFEEDBOMID = e.FID
+        where to_char(a.FSTARTDATE, 'yyyy-MM-dd') like #{dateStr}
+          and a.FORGUNITWENSID like #{orgId}
+          and a.FISDEL = 0
+          and a.cfstatus = 1
+        order by a.FCREATETIME desc
+    </select>
+</mapper>

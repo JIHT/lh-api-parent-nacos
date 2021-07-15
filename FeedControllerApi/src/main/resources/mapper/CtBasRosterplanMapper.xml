@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lihua.feedcontrollerapi.dao.CtBasRosterplanDao">
+    <select id="listByDateAndOrgId" resultType="java.util.Map">
+        SELECT
+            r.FID          id,
+            r.FNUMBER      "number",
+            r.FNAME_L2     name,
+            r.CFPERIOD     period,
+            s.FNAME_L2     orgName,
+            s.FID          orgId,
+            m.FNAME_L2     materialName,
+            m.FID          materialId,
+            c.FNAME_L2     companyName,
+            c.FID          companyId
+        FROM
+            CT_BAS_ROSTERPLAN r
+                LEFT JOIN T_ORG_STORAGE s ON s.FID = r.CFORGID
+                LEFT JOIN T_BD_MATERIAL m ON m.FID = r.CFFEEDID
+                LEFT JOIN T_ORG_COMPANY c ON c.FID = r.CFCOMPANYID
+        WHERE
+            to_char( r.CFPLANDATE, 'yyyy-MM-dd' ) = #{ dateStr }
+          AND r.CFCOMPANYID = #{ companyId }
+        ORDER BY
+            r.CFPLANTIME DESC
+    </select>
+    <select id="selectById" resultType="com.lihua.feedcontrollerapi.entity.CtBasRosterplan">
+        SELECT FNUMBER, FSIMPLENAME, FID, FCREATORID, FCREATETIME, FLASTUPDATEUSERID, FLASTUPDATETIME, FCONTROLUNITID, CFSHIFTLEADERID, CFFEEDID, CFWEIGHT, CFFORMULAID, CFYHLFORMULAID, CFQUANTITY, CFISDUTY, CFORGID, CFPLANDATE, CFPLANTIME, FNAME_L1, FNAME_L2, FNAME_L3, FDESCRIPTION_L1, FDESCRIPTION_L2, FDESCRIPTION_L3, CFFINISHSTORAGEID, CFPERIOD, CFOUTSTORAGEID, CFDISABLE, CFSTATUS, CFISINVALID, CFCOMPANYID FROM CT_BAS_ROSTERPLAN where FID = #{id}
+    </select>
+</mapper>

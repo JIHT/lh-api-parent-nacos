@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lihua.feedcontrollerapi.dao.TProProducebillentryDao">
+    <!-- TProProducebillentry的resultMap,column是给数据库列起的别名,它对应property类的属性 -->
+
+    <select id="getEntriesByBillId" resultType="java.util.Map">
+        select a.fid        "id",
+               b.FNAME_L2   "matName",
+               a.FSCHQTY    "planQty",
+               a.FFINISHQTY "realQty",
+               c.FNAME_L2   "unit",
+               b.FID "materId",
+               B.FNUMBER "matNum"
+        from lihua.CT_INV_DESIGNFEEDBILLENTRY a
+                 left join lihua.T_BD_MATERIAL b on a.FSTUFFNUMBERID = b.FID
+                 left join lihua.T_BD_MEASUREUNIT c on a.FENTRYSUNITID = c.FID
+        where a.FPARENTID like #{parentId}
+    </select>
+</mapper>

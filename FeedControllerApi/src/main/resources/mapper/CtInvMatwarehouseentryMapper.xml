@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lihua.feedcontrollerapi.dao.CtInvMatwarehouseentryDao">
+    <insert id="insertEntry">
+        insert into CT_INV_MATWAREHOUSEENTRY(FID, FPARENTID, CFAICOUNT,CFACTUALQTY, CFAIMATERIALID, CFSHCHANLINE)
+                    values (#{fid},#{wareHouseId},#{aiCount},#{actualQty},#{materialId},#{shChanLine})
+    </insert>
+    <select id="selectByNumAndWare" resultType="java.util.Map">
+        SELECT
+            a.aiCount,
+            a.materialId,
+            a.wareHouseId,
+            a.shChanLine,
+            b.FNAME_L2 materialName
+        FROM
+            (
+                SELECT
+                    m.CFAICOUNT aiCount,
+                    m.CFAIMATERIALID materialId,
+                    m.FPARENTID wareHouseId,
+                    m.CFSHCHANLINE shChanLine
+                FROM
+                    CT_INV_MATWAREHOUSEENTRY m
+                WHERE
+                    m.FPARENTID = #{wareHouseId}
+                  AND
+                    m.CFSHCHANLINE = #{shChanLine}
+                ORDER BY
+                    m.CFAICOUNT DESC
+            ) a
+                LEFT JOIN T_BD_MATERIAL b ON b.FID = a.MATERIALID
+        WHERE
+            ROWNUM = 1
+    </select>
+</mapper>

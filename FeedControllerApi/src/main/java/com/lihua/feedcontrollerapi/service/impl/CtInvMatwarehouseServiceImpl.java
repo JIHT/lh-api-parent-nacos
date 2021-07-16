@@ -42,4 +42,9 @@ public class CtInvMatwarehouseServiceImpl extends ServiceImpl<CtInvMatwarehouseD
         baseMapper.insert(ctInvMatwarehouse);
         return fid;
     }
+
+    @Override
+    public void updateStatus(String id, String status) {
+        baseMapper.updateWarestatusById(id,status);
+    }
 }

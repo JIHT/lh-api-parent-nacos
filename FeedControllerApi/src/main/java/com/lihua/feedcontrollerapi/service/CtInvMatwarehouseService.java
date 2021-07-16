@@ -18,4 +18,10 @@ public interface CtInvMatwarehouseService extends IService<CtInvMatwarehouse> {
      * @return 结果
      */
     String insertAll(String id, String dateStr, String materialId) throws ParseException;
+
+    /**
+     * 修改单据状态
+     * @param status 状态
+     */
+    void updateStatus(String id, String status);
 }
